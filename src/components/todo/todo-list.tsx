@@ -31,8 +31,6 @@ const TodoList: React.FC<TodoListProps> = ({
   onDelete,
   onPageChange,
 }) => {
-  console.log(total);
-
   const columns: TableProps<Todo | OptimisticTodo>["columns"] = [
     {
       title: "Title",

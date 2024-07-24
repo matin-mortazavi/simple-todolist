@@ -21,7 +21,7 @@ export const getTodos = async (
   }
 };
 
-export const getTodo = ({ id }: { id: string }): Promise<Todo> =>
+export const getTodo = (id: string): Promise<Todo> =>
   fetch(`${BASE_URL}/todos/${id}`).then((res) => res.json());
 
 export const createTodo = (payload: Todo): Promise<Todo> =>
