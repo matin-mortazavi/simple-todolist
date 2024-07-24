@@ -8,22 +8,33 @@ const AuthForm = ({
   form: FormInstance;
   onFinish: (payload: User) => void;
 }) => {
+  const requiredItem = { required: true, message: "This field is required" };
+
+  const formItems = [
+    {
+      name: "username",
+      label: "Username",
+      rules: [requiredItem],
+      childElem: {
+        elem: <Input />,
+        props: {},
+      },
+    },
+    {
+      name: "password",
+      label: "Password",
+      rules: [requiredItem],
+      childElem: {
+        elem: <Input />,
+        props: {
+          type: "password",
+        },
+      },
+    },
+  ];
   return (
     <Form onFinish={onFinish} form={form}>
-      <Form.Item
-        name="username"
-        label="Username"
-        rules={[{ required: true, message: "This field is required" }]}
-      >
-        <Input />
-      </Form.Item>
-      <Form.Item
-        name="password"
-        label="Password"
-        rules={[{ required: true, message: "This field is required" }]}
-      >
-        <Input />
-      </Form.Item>
+     {formItems.map((item) => <Form.item>)}
       <Button htmlType="submit">Login</Button>
     </Form>
   );
