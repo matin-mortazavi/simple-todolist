@@ -1,11 +1,9 @@
 import {
-  queryOptions,
   useMutation,
-  useQuery,
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query";
-import { createTodo, deleteTodo, getTodos, updateTodo } from "@/services/todo";
+import { createTodo, deleteTodo, updateTodo } from "@/services/todo";
 import { Button, Form, Modal } from "antd";
 import { useState } from "react";
 import TodoForm from "@/components/todo/todo-form";
@@ -37,6 +35,7 @@ export default function Todos() {
     isLoading,
     isError,
   } = useSuspenseQuery(todoListOptions(page, todoConstant.INITIAL_LIMIT));
+
   //Optimistic updating UI
   const handleMutate = async (todo: Todo) => {
     queryClient.cancelQueries({
@@ -48,11 +47,25 @@ export default function Todos() {
     );
 
     if (prevTodos) {
-      const updatedTodos = [
-        ...prevTodos.items,
-        { ...todo, isPending: true } as OptimisticTodo,
-      ];
-      const updatedTotalTodos = prevTodos.total + 1;
+      //To findout it's an update or creation
+      const existedTodo = prevTodos.items.find((item) => item.id === todo.id);
+      //it will changes depends in it's an update or creation
+      const updatedTodos = [...prevTodos.items];
+      //It may changes if it's a creation
+      let updatedTotalTodos = prevTodos.total;
+
+      if (existedTodo) {
+        const existedTodoIndex = prevTodos.items.findIndex(
+          (todo) => todo.id === existedTodo?.id
+        );
+        updatedTodos.splice(existedTodoIndex, 1, {
+          ...todo,
+          isPending: true,
+        } as OptimisticTodo);
+      } else {
+        updatedTotalTodos++;
+        updatedTodos.push({ ...todo, isPending: true } as OptimisticTodo);
+      }
 
       queryClient.setQueryData(
         todoListOptions(page, todoConstant.INITIAL_LIMIT).queryKey,
@@ -65,11 +78,10 @@ export default function Todos() {
   };
 
   //get triggerd afer end of fetch and refetch todos
-  const handleSettled = () => {
+  const handleSettled = () =>
     queryClient.invalidateQueries({
       queryKey: todoListOptions(page, todoConstant.INITIAL_LIMIT).queryKey,
     });
-  };
 
   // Create todo mutation
   const { mutateAsync: addTodoMutation, isPending: addTodoLoading } =
@@ -84,9 +96,6 @@ export default function Todos() {
     useMutation({
       mutationFn: updateTodo,
       onMutate: handleMutate,
-      onSuccess: (data, variables) => {
-        queryClient.setQueryData([["todo"], { id: variables.id }], data);
-      },
       onSettled: handleSettled,
     });
 
