@@ -1,4 +1,4 @@
-import general from "@/constants/general";
+import { generalConstant } from "@/constants";
 import { Todo } from "@/types/todo";
 import {
   Button,
@@ -43,7 +43,7 @@ const TodoForm = ({ form, onFinish, onClose, loading }: TodoFormProps) => {
             <Form.Item
               label="priority"
               name="priority"
-              rules={[general.DEFAULT_REQUIRED_FIELD_CONFIG]}
+              rules={[generalConstant.DEFAULT_REQUIRED_FIELD_CONFIG]}
             >
               <Select options={priorities} />
             </Form.Item>
@@ -61,7 +61,7 @@ const TodoForm = ({ form, onFinish, onClose, loading }: TodoFormProps) => {
             <FormItem
               label="Title"
               name="title"
-              rules={[general.DEFAULT_REQUIRED_FIELD_CONFIG]}
+              rules={[generalConstant.DEFAULT_REQUIRED_FIELD_CONFIG]}
             >
               <Input />
             </FormItem>

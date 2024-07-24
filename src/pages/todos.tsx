@@ -1,17 +1,22 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  queryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { createTodo, deleteTodo, getTodos, updateTodo } from "@/services/todo";
 import { Button, Form, Modal } from "antd";
 import { useState } from "react";
 import TodoForm from "@/components/todo/todo-form";
 import TodoList from "@/components/todo/todo-list";
 import { FetchedTodos, OptimisticTodo, Todo } from "@/types/todo";
-
+import { todoListOptions } from "@/services/query-options";
+import { todoConstant } from "@/constants";
 interface ModalState {
   open: boolean;
   todoId?: string;
 }
-
-const LIMIT = 4;
 
 export default function Todos() {
   const queryClient = useQueryClient();
@@ -26,21 +31,20 @@ export default function Todos() {
 
   const [page, setPage] = useState<number>(1);
   const onPageChange = (page: number) => setPage(page);
-
-  const todoListOptions = {
-    queryKey: ["todos", page],
-    queryFn: () => getTodos(page, LIMIT),
-  };
-
   // Fetch todos on mount
-  const { data: todos, isLoading, isError } = useQuery(todoListOptions);
-
+  const {
+    data: todos,
+    isLoading,
+    isError,
+  } = useSuspenseQuery(todoListOptions(page, todoConstant.INITIAL_LIMIT));
   //Optimistic updating UI
   const handleMutate = async (todo: Todo) => {
-    queryClient.cancelQueries({ queryKey: todoListOptions.queryKey });
+    queryClient.cancelQueries({
+      queryKey: todoListOptions(page, todoConstant.INITIAL_LIMIT).queryKey,
+    });
 
     const prevTodos = queryClient.getQueryData<FetchedTodos>(
-      todoListOptions.queryKey
+      todoListOptions(page, todoConstant.INITIAL_LIMIT).queryKey
     );
 
     if (prevTodos) {
@@ -50,16 +54,21 @@ export default function Todos() {
       ];
       const updatedTotalTodos = prevTodos.total + 1;
 
-      queryClient.setQueryData(todoListOptions.queryKey, {
-        total: updatedTotalTodos,
-        items: updatedTodos,
-      });
+      queryClient.setQueryData(
+        todoListOptions(page, todoConstant.INITIAL_LIMIT).queryKey,
+        {
+          total: updatedTotalTodos,
+          items: updatedTodos,
+        }
+      );
     }
   };
 
   //get triggerd afer end of fetch and refetch todos
   const handleSettled = () => {
-    queryClient.invalidateQueries({ queryKey: todoListOptions.queryKey });
+    queryClient.invalidateQueries({
+      queryKey: todoListOptions(page, todoConstant.INITIAL_LIMIT).queryKey,
+    });
   };
 
   // Create todo mutation
@@ -138,7 +147,7 @@ export default function Todos() {
       <TodoList
         crrPage={page}
         loading={isLoading}
-        limit={LIMIT}
+        limit={todoConstant.INITIAL_LIMIT}
         total={todos?.total}
         todos={todos?.items}
         onUpdate={handleUpdate}

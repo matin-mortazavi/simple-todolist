@@ -1,5 +1,5 @@
 import { User } from "@/types/user";
-import constants from "@/constants/auth";
+import { authConstant } from "@/constants/auth";
 
 const BASE_URL = "http://localhost:3000";
 
@@ -13,7 +13,7 @@ export const login = async (payload: User): Promise<User> => {
     if (user.password === payload.password)
       //We use json-server as data provider and it work with "id" property
       //so we fetch with id but we transform it to "username" in returb
-      return { username: user.id, token: constants.TOKEN };
+      return { username: user.id, token: authConstant.TOKEN };
     else throw new Error("Password in wrong");
   } catch (err) {
     throw new Error("Username or Password is wrong");

@@ -1,3 +1,3 @@
-export default {
-    TOKEN : "FAKE_TOKEN"
-}
+export const authConstant = {
+  TOKEN: "FAKE_TOKEN",
+};

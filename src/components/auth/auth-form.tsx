@@ -1,4 +1,4 @@
-import general from "@/constants/general";
+import { generalConstant } from "@/constants";
 import { User } from "@/types/user";
 import { Button, Form, FormInstance, Input } from "antd";
 
@@ -14,14 +14,14 @@ const AuthForm = ({
       <Form.Item
         name="username"
         label="Username"
-        rules={[general.DEFAULT_REQUIRED_FIELD_CONFIG]}
+        rules={[generalConstant.DEFAULT_REQUIRED_FIELD_CONFIG]}
       >
         <Input />
       </Form.Item>
       <Form.Item
         name="password"
         label="Password"
-        rules={[general.DEFAULT_REQUIRED_FIELD_CONFIG]}
+        rules={[generalConstant.DEFAULT_REQUIRED_FIELD_CONFIG]}
       >
         <Input />
       </Form.Item>
