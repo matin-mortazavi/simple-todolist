@@ -3,12 +3,14 @@ import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { routeTree } from "@/routeTree.gen";
 import { useAuthStore } from "@/store/auth";
 import { Spin } from "antd";
+import NotFound from "@/pages/not-found";
 
 const client = new QueryClient();
 
 const router = createRouter({
   routeTree,
   defaultPendingComponent: () => <Spin />,
+  defaultNotFoundComponent: () => <NotFound />,
   //   defaultErrorComponent: ({ error }) => <span>sth went wrong {error}</span> />,
   context: {
     auth: undefined!,

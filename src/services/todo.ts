@@ -1,4 +1,4 @@
-import { Todo } from "../types/todo";
+import { Todo } from "@/types/todo";
 
 const BASE_URL = "http://localhost:3000";
 

@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
-import Providers from "./components/providers";
+import Providers from "./components/general/providers";
 
 import "./index.css";
 

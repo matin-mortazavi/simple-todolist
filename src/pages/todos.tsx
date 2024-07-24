@@ -2,8 +2,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createTodo, deleteTodo, getTodos, updateTodo } from "@/services/todo";
 import { Button, Form, Modal, Spin } from "antd";
 import { useState } from "react";
-import TodoForm from "@/components/todo-form";
-import TodoList from "@/components/todo-list";
+import TodoForm from "@/components/todo/todo-form";
+import TodoList from "@/components/todo/todo-list";
 
 interface Modal {
   open: boolean;
