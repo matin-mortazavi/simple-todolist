@@ -1,6 +1,7 @@
 import React from "react";
 import { Todo } from "../types/todo";
 import { Button, Popconfirm, Table, TableProps, Tag } from "antd";
+
 const colors: {
   [key: string]: string;
 } = {
@@ -54,18 +55,19 @@ const TodoList: React.FC<TodoListProps> = ({ todos, onUpdate, onDelete }) => {
           <Popconfirm
             title="Delete the task"
             description="Are you sure to delete this task?"
-            okText="Yes"
+            okText="Confirm"
             cancelText="No"
             onConfirm={() => onDelete(record.id)}
           >
             <Button danger>Delete</Button>
           </Popconfirm>
 
-          <span onClick={() => onUpdate(record.id)}>edit</span>
+          <Button onClick={() => onUpdate(record.id)}>Edit</Button>
         </div>
       ),
     },
   ];
+
   return <Table columns={columns} dataSource={todos} />;
 };
 

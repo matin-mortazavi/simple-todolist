@@ -1,34 +1,33 @@
 {
   "todos": [
     {
-      "id": "2",
-      "title": "edited 2",
+      "id": 1,
       "priority": "medium",
-      "isCompleted": false
+      "isCompleted": false,
+      "title": "Learn Advanced TS"
     },
     {
-      "id": "3",
-      "title": "edited 3",
-      "priority": "low",
-      "isCompleted": false
-    },
-    {
-      "id": "4",
-      "priority": "low",
-      "title": "eat some vitamins",
-      "isCompleted": false
-    },
-    {
-      "id": "5",
-      "priority": "medium",
-      "title": "hi",
-      "isCompleted": false
-    },
-    {
-      "id": 6,
+      "id": 2,
       "priority": "medium",
       "isCompleted": true,
-      "title": "newOne"
+      "title": "Review German B2 Book"
+    },
+    {
+      "id": 3,
+      "priority": "high",
+      "title": "Start B2 In English"
+    },
+    {
+      "id": 4,
+      "priority": "high",
+      "isCompleted": true,
+      "title": "Learn React-Query"
+    }
+  ],
+  "users": [
+    {
+      "id": "matin",
+      "password": "123456"
     }
   ]
 }

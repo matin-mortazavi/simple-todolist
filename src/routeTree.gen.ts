@@ -13,8 +13,10 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as TodosIndexImport } from './routes/todos.index'
+import { Route as LoginImport } from './routes/login'
+import { Route as AuthImport } from './routes/_auth'
 import { Route as TodosIdImport } from './routes/todos.$id'
+import { Route as AuthTodosIndexImport } from './routes/_auth.todos.index'
 
 // Create Virtual Routes
 
@@ -22,19 +24,29 @@ const IndexLazyImport = createFileRoute('/')()
 
 // Create/Update Routes
 
+const LoginRoute = LoginImport.update({
+  path: '/login',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AuthRoute = AuthImport.update({
+  id: '/_auth',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const IndexLazyRoute = IndexLazyImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
 
-const TodosIndexRoute = TodosIndexImport.update({
-  path: '/todos/',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const TodosIdRoute = TodosIdImport.update({
   path: '/todos/$id',
   getParentRoute: () => rootRoute,
+} as any)
+
+const AuthTodosIndexRoute = AuthTodosIndexImport.update({
+  path: '/todos/',
+  getParentRoute: () => AuthRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -48,6 +60,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexLazyImport
       parentRoute: typeof rootRoute
     }
+    '/_auth': {
+      id: '/_auth'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthImport
+      parentRoute: typeof rootRoute
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginImport
+      parentRoute: typeof rootRoute
+    }
     '/todos/$id': {
       id: '/todos/$id'
       path: '/todos/$id'
@@ -55,12 +81,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TodosIdImport
       parentRoute: typeof rootRoute
     }
-    '/todos/': {
-      id: '/todos/'
+    '/_auth/todos/': {
+      id: '/_auth/todos/'
       path: '/todos'
       fullPath: '/todos'
-      preLoaderRoute: typeof TodosIndexImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof AuthTodosIndexImport
+      parentRoute: typeof AuthImport
     }
   }
 }
@@ -69,8 +95,9 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren({
   IndexLazyRoute,
+  AuthRoute: AuthRoute.addChildren({ AuthTodosIndexRoute }),
+  LoginRoute,
   TodosIdRoute,
-  TodosIndexRoute,
 })
 
 /* prettier-ignore-end */
@@ -82,18 +109,29 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/todos/$id",
-        "/todos/"
+        "/_auth",
+        "/login",
+        "/todos/$id"
       ]
     },
     "/": {
       "filePath": "index.lazy.tsx"
     },
+    "/_auth": {
+      "filePath": "_auth.tsx",
+      "children": [
+        "/_auth/todos/"
+      ]
+    },
+    "/login": {
+      "filePath": "login.tsx"
+    },
     "/todos/$id": {
       "filePath": "todos.$id.tsx"
     },
-    "/todos/": {
-      "filePath": "todos.index.tsx"
+    "/_auth/todos/": {
+      "filePath": "_auth.todos.index.tsx",
+      "parent": "/_auth"
     }
   }
 }

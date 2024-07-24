@@ -1,23 +1,21 @@
 import { Card, Checkbox, Col, Form, Input, Row, Select } from "antd";
+import { FormInstance } from "antd/es/form/Form";
 import FormItem from "antd/es/form/FormItem";
-import React from "react";
 
-const TodoForm = ({ id, form }: { id?: string; form: any }) => {
-  const isEditMode = !!id;
+const priorities = [
+  { value: "high", label: "High" },
+  { value: "medium", label: "Medium" },
+  { value: "low", label: "Low" },
+];
 
-  const priorities = [
-    { value: "high", label: "High" },
-    { value: "medium", label: "Medium" },
-    { value: "low", label: "Low" },
-  ];
+const intitalValues = {
+  title: "",
+  id: "",
+  priority: "",
+  isComplated: "",
+};
 
-  const intitalValues = {
-    title: "",
-    id: "",
-    priority: "",
-    isComplated: "",
-  };
-
+const TodoForm = ({ form }: { form: FormInstance }) => {
   return (
     <Card>
       <Form form={form} initialValues={intitalValues}>
