@@ -2,9 +2,12 @@ import { FetchedTodos, Todo } from "@/types/todo";
 
 const BASE_URL = "http://localhost:3000";
 
-export const getTodos = async (): Promise<FetchedTodos> => {
+export const getTodos = async (
+  page: number = 1,
+  limit: number = 5
+): Promise<FetchedTodos> => {
   try {
-    const res = await fetch(`${BASE_URL}/todos?_page=1&_limit=2`);
+    const res = await fetch(`${BASE_URL}/todos?_page=${page}&_limit=${limit}`);
     const items = await res.json();
 
     const data = {

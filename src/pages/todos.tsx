@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createTodo, deleteTodo, getTodos, updateTodo } from "@/services/todo";
-import { Button, Form, Modal, Spin } from "antd";
+import { Button, Form, Modal } from "antd";
 import { useState } from "react";
 import TodoForm from "@/components/todo/todo-form";
 import TodoList from "@/components/todo/todo-list";
@@ -11,9 +11,12 @@ interface ModalState {
   todoId?: string;
 }
 
+const LIMIT = 4;
+
 export default function Todos() {
   const [form] = Form.useForm();
   const [modal, setModal] = useState<ModalState>({ open: false, todoId: "" });
+  const [page, setPage] = useState<number>(1);
 
   const handleCloseModal = () => {
     setModal({ todoId: "", open: false });
@@ -23,17 +26,12 @@ export default function Todos() {
   const queryClient = useQueryClient();
 
   const todoListOptions = {
-    queryKey: ["todos"],
-    queryFn: getTodos,
+    queryKey: ["todos", page],
+    queryFn: () => getTodos(page, LIMIT),
   };
 
   // Fetch todos on mount
-  const {
-    data: todos,
-    isLoading,
-    isError,
-    isSuccess,
-  } = useQuery(todoListOptions);
+  const { data: todos, isLoading, isError } = useQuery(todoListOptions);
 
   const handleMutate = async (todo: Todo) => {
     queryClient.cancelQueries({ queryKey: todoListOptions.queryKey });
@@ -50,7 +48,7 @@ export default function Todos() {
 
       queryClient.setQueryData(todoListOptions.queryKey, {
         total: updatedTotalTodos,
-        ...updatedTodos,
+        items: updatedTodos,
       });
     }
   };
@@ -81,6 +79,7 @@ export default function Todos() {
   // Delete todo mutation
   const { mutateAsync: deleteTodoMutation } = useMutation({
     mutationFn: deleteTodo,
+    onSettled: handleSettled,
   });
 
   // get triggered with clicking on "Edit Button" in todo-list
@@ -109,7 +108,7 @@ export default function Todos() {
         await updateTodoMutation({ ...payload, id: modal.todoId });
       } else {
         const payloadWithId = {
-          id: (todos!.items.length + 1).toString(),
+          id: (todos!.total + 1).toString(),
           ...payload,
         };
         await addTodoMutation(payloadWithId);
@@ -120,8 +119,11 @@ export default function Todos() {
     handleCloseModal();
   };
 
-  if (isLoading) return <Spin />;
-  else if (isError) return <span>error</span>;
+  const onPageChange = (page: number) => {
+    setPage(page);
+  };
+
+  if (isError) return <span>error</span>;
 
   return (
     <div>
@@ -133,13 +135,16 @@ export default function Todos() {
         Create New Todo
       </Button>
 
-      {isSuccess && (
-        <TodoList
-          todos={todos.items}
-          onUpdate={handleUpdate}
-          onDelete={handleDelete}
-        />
-      )}
+      <TodoList
+        crrPage={page}
+        loading={isLoading}
+        limit={LIMIT}
+        total={todos?.total}
+        todos={todos?.items}
+        onUpdate={handleUpdate}
+        onDelete={handleDelete}
+        onPageChange={onPageChange}
+      />
 
       <Modal
         title={modal.todoId ? "Edit Todo" : "Add Todo"}

@@ -11,12 +11,28 @@ const colors: {
 };
 
 interface TodoListProps {
-  todos: Todo[] | OptimisticTodo[];
+  todos?: Todo[] | OptimisticTodo[];
+  total?: number;
+  crrPage: number;
+  limit: number;
+  loading: boolean;
   onUpdate: (id: string) => void;
   onDelete: (id: string) => void;
+  onPageChange: (page: number) => void;
 }
 
-const TodoList: React.FC<TodoListProps> = ({ todos, onUpdate, onDelete }) => {
+const TodoList: React.FC<TodoListProps> = ({
+  todos,
+  total,
+  crrPage = 1,
+  limit = 6,
+  loading,
+  onUpdate,
+  onDelete,
+  onPageChange,
+}) => {
+  console.log(total);
+
   const columns: TableProps<Todo | OptimisticTodo>["columns"] = [
     {
       title: "Title",
@@ -84,9 +100,16 @@ const TodoList: React.FC<TodoListProps> = ({ todos, onUpdate, onDelete }) => {
 
   return (
     <Table
+      loading={loading}
       rowClassName={(record) =>
         (record as OptimisticTodo).isPending ? "bg-gray-50  text-gray-300" : ""
       }
+      pagination={{
+        total,
+        current: crrPage,
+        defaultPageSize: limit,
+        onChange: onPageChange,
+      }}
       columns={columns}
       dataSource={todos}
     />

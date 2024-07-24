@@ -9,7 +9,7 @@ const client = new QueryClient();
 
 const router = createRouter({
   routeTree,
-  defaultPendingComponent: () => <Spin />,
+  // defaultPendingComponent: () => <Spin />,
   defaultNotFoundComponent: () => <NotFound />,
   //   defaultErrorComponent: ({ error }) => <span>sth went wrong {error}</span> />,
   context: {
