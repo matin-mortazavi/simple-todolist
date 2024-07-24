@@ -31,7 +31,7 @@ const intitalValues = {
   title: "",
   id: "",
   priority: "",
-  isComplated: "",
+  isCompleted: "",
 };
 
 const TodoForm = ({ form, onFinish, onClose, loading }: TodoFormProps) => {

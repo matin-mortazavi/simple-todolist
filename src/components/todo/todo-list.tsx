@@ -1,6 +1,6 @@
 import React from "react";
-import { Todo } from "@/types/todo";
-import { Button, Popconfirm, Table, TableProps, Tag } from "antd";
+import { OptimisticTodo, Todo } from "@/types/todo";
+import { Button, Popconfirm, Spin, Table, TableProps, Tag } from "antd";
 
 const colors: {
   [key: string]: string;
@@ -11,16 +11,22 @@ const colors: {
 };
 
 interface TodoListProps {
-  todos: Todo[];
+  todos: Todo[] | OptimisticTodo[];
   onUpdate: (id: string) => void;
   onDelete: (id: string) => void;
 }
+
 const TodoList: React.FC<TodoListProps> = ({ todos, onUpdate, onDelete }) => {
-  const columns: TableProps<Todo>["columns"] = [
+  const columns: TableProps<Todo | OptimisticTodo>["columns"] = [
     {
       title: "Title",
       dataIndex: "title",
       key: "title",
+      render: (title, record) => (
+        <span>
+          {(record as OptimisticTodo).isPending && <Spin />} {title}
+        </span>
+      ),
     },
     {
       title: "Priority",
@@ -59,16 +65,32 @@ const TodoList: React.FC<TodoListProps> = ({ todos, onUpdate, onDelete }) => {
             cancelText="No"
             onConfirm={() => onDelete(record.id)}
           >
-            <Button danger>Delete</Button>
+            <Button disabled={(record as OptimisticTodo).isPending} danger>
+              Delete
+            </Button>
           </Popconfirm>
 
-          <Button onClick={() => onUpdate(record.id)}>Edit</Button>
+          <Button
+            className=""
+            disabled={(record as OptimisticTodo).isPending}
+            onClick={() => onUpdate(record.id)}
+          >
+            Edit
+          </Button>
         </div>
       ),
     },
   ];
 
-  return <Table columns={columns} dataSource={todos} />;
+  return (
+    <Table
+      rowClassName={(record) =>
+        (record as OptimisticTodo).isPending ? "bg-gray-50  text-gray-300" : ""
+      }
+      columns={columns}
+      dataSource={todos}
+    />
+  );
 };
 
 export default TodoList;

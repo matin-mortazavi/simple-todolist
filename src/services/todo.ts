@@ -10,6 +10,9 @@ export const getTodo = ({ id }: { id: string }): Promise<Todo> =>
 
 export const createTodo = (payload: Todo): Promise<Todo> =>
   fetch(`${BASE_URL}/todos`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
     method: "POST",
     body: JSON.stringify(payload),
   }).then((res) => res.json());

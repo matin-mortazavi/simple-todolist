@@ -1,6 +1,10 @@
 export interface Todo {
   id: string;
-  isComplated: boolean;
+  isCompleted: boolean;
   title: string;
   priority: "high" | "low" | "medium";
+}
+
+export interface OptimisticTodo extends Todo {
+  isPending: boolean;
 }

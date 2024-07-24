@@ -1,18 +1,19 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createTodo, deleteTodo, getTodos, updateTodo } from "@/services/todo";
 import { Button, Form, Modal, Spin } from "antd";
-import { useCallback, useMemo, useState } from "react";
+import { useState } from "react";
 import TodoForm from "@/components/todo/todo-form";
 import TodoList from "@/components/todo/todo-list";
+import { OptimisticTodo, Todo } from "@/types/todo";
 
-interface Modal {
+interface ModalState {
   open: boolean;
   todoId?: string;
 }
 
 export default function Todos() {
   const [form] = Form.useForm();
-  const [modal, setModal] = useState<Modal>({ open: false, todoId: "" });
+  const [modal, setModal] = useState<ModalState>({ open: false, todoId: "" });
 
   const handleCloseModal = () => {
     setModal({ todoId: "", open: false });
@@ -21,59 +22,79 @@ export default function Todos() {
 
   const queryClient = useQueryClient();
 
-  //Fetch todos in mount
+  const todoListOptions = {
+    queryKey: ["todos"],
+    queryFn: getTodos,
+  };
+
+  // Fetch todos on mount
   const {
     data: todos,
     isLoading,
     isError,
     isSuccess,
-    refetch,
-  } = useQuery({
-    queryKey: ["todos"],
-    queryFn: getTodos,
-  });
+  } = useQuery(todoListOptions);
 
-  //Create todo mutation
+  const handleMutate = async (todo: Todo) => {
+    queryClient.cancelQueries({ queryKey: todoListOptions.queryKey });
+    const prevTodos = queryClient.getQueryData<Todo[]>(
+      todoListOptions.queryKey
+    );
+
+    if (prevTodos) {
+      queryClient.setQueryData(todoListOptions.queryKey, [
+        ...prevTodos,
+        { ...todo, isPending: true } as OptimisticTodo,
+      ]);
+    }
+  };
+
+  const handleSettled = () => {
+    queryClient.invalidateQueries({ queryKey: todoListOptions.queryKey });
+  };
+
+  // Create todo mutation
   const { mutateAsync: addTodoMutation, isPending: addTodoLoading } =
     useMutation({
       mutationFn: createTodo,
+      onMutate: handleMutate,
+      onSettled: handleSettled,
     });
 
-  //Update todo mutation
+  // Update todo mutation
   const { mutateAsync: updateTodoMutation, isPending: updateTodoLoading } =
     useMutation({
       mutationFn: updateTodo,
+      onMutate: handleMutate,
       onSuccess: (data, variables) => {
         queryClient.setQueryData([["todo"], { id: variables.id }], data);
       },
+      onSettled: handleSettled,
     });
 
-  //Delete todo mutation
+  // Delete todo mutation
   const { mutateAsync: deleteTodoMutation } = useMutation({
     mutationFn: deleteTodo,
   });
 
-  //get triggered with clicking on "Edit Button" in todo-list
+  // get triggered with clicking on "Edit Button" in todo-list
   const handleUpdate = async (id: string): Promise<void> => {
     const todoToEdit = todos?.find((item) => item.id === id);
 
     setModal({ todoId: id, open: true });
     form.setFieldsValue(todoToEdit);
-
-    console.log(form.getFieldsValue());
   };
 
-  //get triggered with clicking on "Delete Button" in todo-list
+  // get triggered with clicking on "Delete Button" in todo-list
   const handleDelete = async (id: string): Promise<void> => {
     try {
       await deleteTodoMutation(id);
-      refetch();
     } catch (err) {
       console.log(err);
     }
   };
 
-  //get triggered with "onOk" in Modal
+  // get triggered with "onOk" in Modal
   const onSubmit = async () => {
     try {
       const payload = form.getFieldsValue();
@@ -81,22 +102,17 @@ export default function Todos() {
       if (modal.todoId) {
         await updateTodoMutation({ ...payload, id: modal.todoId });
       } else {
-        payload.id = (todos!.length + 1).toString();
-        await addTodoMutation(payload);
+        const payloadWithId = {
+          id: (todos!.length + 1).toString(),
+          ...payload,
+        };
+        await addTodoMutation(payloadWithId);
       }
-      refetch();
     } catch (err) {
       console.log(err);
     }
     handleCloseModal();
   };
-
-  const errors = useMemo(() => {
-    const erros = form.getFieldsError();
-    console.log(erros);
-
-    return erros;
-  }, [form.getFieldsError()]);
 
   if (isLoading) return <Spin />;
   else if (isError) return <span>error</span>;
@@ -120,10 +136,10 @@ export default function Todos() {
       )}
 
       <Modal
-        okText={modal.todoId ? "Edit" : "Add"}
+        title={modal.todoId ? "Edit Todo" : "Add Todo"}
         open={modal.open}
         footer={null}
-        onClose={handleCloseModal}
+        onCancel={handleCloseModal}
       >
         <TodoForm
           form={form}
