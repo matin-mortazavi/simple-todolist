@@ -14,9 +14,11 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as LoginImport } from './routes/login'
+import { Route as DashboardImport } from './routes/_dashboard'
 import { Route as AuthImport } from './routes/_auth'
 import { Route as TodosIdImport } from './routes/todos.$id'
 import { Route as AuthTodosIndexImport } from './routes/_auth.todos.index'
+import { Route as protectedAuthIndexImport } from './routes/(protected)/_auth/index'
 
 // Create Virtual Routes
 
@@ -26,6 +28,11 @@ const IndexLazyImport = createFileRoute('/')()
 
 const LoginRoute = LoginImport.update({
   path: '/login',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const DashboardRoute = DashboardImport.update({
+  id: '/_dashboard',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -49,6 +56,11 @@ const AuthTodosIndexRoute = AuthTodosIndexImport.update({
   getParentRoute: () => AuthRoute,
 } as any)
 
+const protectedAuthIndexRoute = protectedAuthIndexImport.update({
+  path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -67,6 +79,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthImport
       parentRoute: typeof rootRoute
     }
+    '/_dashboard': {
+      id: '/_dashboard'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof DashboardImport
+      parentRoute: typeof rootRoute
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -79,6 +98,13 @@ declare module '@tanstack/react-router' {
       path: '/todos/$id'
       fullPath: '/todos/$id'
       preLoaderRoute: typeof TodosIdImport
+      parentRoute: typeof rootRoute
+    }
+    '/(protected)/_auth/': {
+      id: '/_auth/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof protectedAuthIndexImport
       parentRoute: typeof rootRoute
     }
     '/_auth/todos/': {
@@ -98,6 +124,7 @@ export const routeTree = rootRoute.addChildren({
   AuthRoute: AuthRoute.addChildren({ AuthTodosIndexRoute }),
   LoginRoute,
   TodosIdRoute,
+  protectedAuthIndexRoute,
 })
 
 /* prettier-ignore-end */
@@ -110,8 +137,10 @@ export const routeTree = rootRoute.addChildren({
       "children": [
         "/",
         "/_auth",
+        "/_dashboard",
         "/login",
-        "/todos/$id"
+        "/todos/$id",
+        "/_auth/"
       ]
     },
     "/": {
@@ -123,11 +152,17 @@ export const routeTree = rootRoute.addChildren({
         "/_auth/todos/"
       ]
     },
+    "/_dashboard": {
+      "filePath": "_dashboard.tsx"
+    },
     "/login": {
       "filePath": "login.tsx"
     },
     "/todos/$id": {
       "filePath": "todos.$id.tsx"
+    },
+    "/_auth/": {
+      "filePath": "(protected)/_auth/index.tsx"
     },
     "/_auth/todos/": {
       "filePath": "_auth.todos.index.tsx",

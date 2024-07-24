@@ -1,13 +1,18 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { User } from "../types/user";
-
-export const useAuthStore = create(
+export interface AuthStore {
+  isAuthorized: boolean;
+  user: User;
+  login: (user: User) => void;
+  logout: () => void;
+}
+export const useAuthStore = create<AuthStore>()(
   persist(
     (set) => ({
       isAuthorized: false,
       user: {},
-      login: (user: User) => {
+      login: (user) => {
         set({ isAuthorized: true, user });
       },
       logout: () => {
