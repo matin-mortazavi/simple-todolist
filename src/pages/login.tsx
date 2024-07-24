@@ -9,6 +9,8 @@ import { Button, Flex, Form, Input, Typography } from "antd";
 import { login } from "@/services/auth";
 import { User } from "@/types/user";
 import { useEffect } from "react";
+import AuthForm from "@/components/auth/auth-form";
+import AlreadyLoggedin from "@/components/auth/already-loggedin";
 
 export default function Login() {
   const search: { redirect?: string } = useSearch({ from: "/login" });
@@ -41,36 +43,12 @@ export default function Login() {
   return (
     <div className=" w-[500px] bg-slate-300 p-[32px] rounded-xl mx-auto">
       {!context?.isAuthorized ? (
-        <Form onFinish={onFinish} form={form}>
-          <Form.Item
-            name="username"
-            label="Username"
-            rules={[{ required: true, message: "This field is required" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="password"
-            label="Password"
-            rules={[{ required: true, message: "This field is required" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Button htmlType="submit">Login</Button>
-        </Form>
+        <AuthForm form={form} onFinish={onFinish} />
       ) : (
-        <Flex gap="24" vertical>
-          <Typography.Paragraph>
-            You loggedIn as
-            <span className="ml-[8px] text-lg">{context.user.username}</span>
-          </Typography.Paragraph>
-          <Typography.Paragraph>
-            Navigate to dashboard <Link to="/todos"> Navigate </Link>
-          </Typography.Paragraph>
-          <Button type="primary" onClick={onLogoutClick}>
-            Log out
-          </Button>
-        </Flex>
+        <AlreadyLoggedin
+          onLogoutClick={onLogoutClick}
+          username={context.user.username!}
+        />
       )}
     </div>
   );
