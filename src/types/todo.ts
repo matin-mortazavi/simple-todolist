@@ -8,3 +8,8 @@ export interface Todo {
 export interface OptimisticTodo extends Todo {
   isPending: boolean;
 }
+
+export interface FetchedTodos {
+  items: Todo[];
+  total: number;
+}

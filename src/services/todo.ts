@@ -1,9 +1,22 @@
-import { Todo } from "@/types/todo";
+import { FetchedTodos, Todo } from "@/types/todo";
 
 const BASE_URL = "http://localhost:3000";
 
-export const getTodos = (): Promise<Todo[]> =>
-  fetch(`${BASE_URL}/todos`).then((res) => res.json());
+export const getTodos = async (): Promise<FetchedTodos> => {
+  try {
+    const res = await fetch(`${BASE_URL}/todos?_page=1&_limit=2`);
+    const items = await res.json();
+
+    const data = {
+      items,
+      total: Number(res.headers.get("X-Total-Count"))!,
+    };
+
+    return data;
+  } catch (err) {
+    throw new Error("Something went wrong");
+  }
+};
 
 export const getTodo = ({ id }: { id: string }): Promise<Todo> =>
   fetch(`${BASE_URL}/todos/${id}`).then((res) => res.json());

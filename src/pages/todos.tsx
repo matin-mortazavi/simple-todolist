@@ -4,7 +4,7 @@ import { Button, Form, Modal, Spin } from "antd";
 import { useState } from "react";
 import TodoForm from "@/components/todo/todo-form";
 import TodoList from "@/components/todo/todo-list";
-import { OptimisticTodo, Todo } from "@/types/todo";
+import { FetchedTodos, OptimisticTodo, Todo } from "@/types/todo";
 
 interface ModalState {
   open: boolean;
@@ -37,15 +37,21 @@ export default function Todos() {
 
   const handleMutate = async (todo: Todo) => {
     queryClient.cancelQueries({ queryKey: todoListOptions.queryKey });
-    const prevTodos = queryClient.getQueryData<Todo[]>(
+    const prevTodos = queryClient.getQueryData<FetchedTodos>(
       todoListOptions.queryKey
     );
 
     if (prevTodos) {
-      queryClient.setQueryData(todoListOptions.queryKey, [
-        ...prevTodos,
+      const updatedTodos = [
+        ...prevTodos.items,
         { ...todo, isPending: true } as OptimisticTodo,
-      ]);
+      ];
+      const updatedTotalTodos = prevTodos.total + 1;
+
+      queryClient.setQueryData(todoListOptions.queryKey, {
+        total: updatedTotalTodos,
+        ...updatedTodos,
+      });
     }
   };
 
@@ -79,7 +85,7 @@ export default function Todos() {
 
   // get triggered with clicking on "Edit Button" in todo-list
   const handleUpdate = async (id: string): Promise<void> => {
-    const todoToEdit = todos?.find((item) => item.id === id);
+    const todoToEdit = todos?.items.find((item) => item.id === id);
 
     setModal({ todoId: id, open: true });
     form.setFieldsValue(todoToEdit);
@@ -103,7 +109,7 @@ export default function Todos() {
         await updateTodoMutation({ ...payload, id: modal.todoId });
       } else {
         const payloadWithId = {
-          id: (todos!.length + 1).toString(),
+          id: (todos!.items.length + 1).toString(),
           ...payload,
         };
         await addTodoMutation(payloadWithId);
@@ -129,7 +135,7 @@ export default function Todos() {
 
       {isSuccess && (
         <TodoList
-          todos={todos}
+          todos={todos.items}
           onUpdate={handleUpdate}
           onDelete={handleDelete}
         />
