@@ -1,3 +1,4 @@
+import general from "@/constants/general";
 import { User } from "@/types/user";
 import { Button, Form, FormInstance, Input } from "antd";
 
@@ -8,33 +9,22 @@ const AuthForm = ({
   form: FormInstance;
   onFinish: (payload: User) => void;
 }) => {
-  const requiredItem = { required: true, message: "This field is required" };
-
-  const formItems = [
-    {
-      name: "username",
-      label: "Username",
-      rules: [requiredItem],
-      childElem: {
-        elem: <Input />,
-        props: {},
-      },
-    },
-    {
-      name: "password",
-      label: "Password",
-      rules: [requiredItem],
-      childElem: {
-        elem: <Input />,
-        props: {
-          type: "password",
-        },
-      },
-    },
-  ];
   return (
     <Form onFinish={onFinish} form={form}>
-     {formItems.map((item) => <Form.item>)}
+      <Form.Item
+        name="username"
+        label="Username"
+        rules={[general.DEFAULT_REQUIRED_FIELD_CONFIG]}
+      >
+        <Input />
+      </Form.Item>
+      <Form.Item
+        name="password"
+        label="Password"
+        rules={[general.DEFAULT_REQUIRED_FIELD_CONFIG]}
+      >
+        <Input />
+      </Form.Item>
       <Button htmlType="submit">Login</Button>
     </Form>
   );

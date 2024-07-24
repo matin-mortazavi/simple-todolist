@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createTodo, deleteTodo, getTodos, updateTodo } from "@/services/todo";
 import { Button, Form, Modal, Spin } from "antd";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import TodoForm from "@/components/todo/todo-form";
 import TodoList from "@/components/todo/todo-list";
 
@@ -81,7 +81,7 @@ export default function Todos() {
       if (modal.todoId) {
         await updateTodoMutation({ ...payload, id: modal.todoId });
       } else {
-        payload.id = todos!.length + 1;
+        payload.id = (todos!.length + 1).toString();
         await addTodoMutation(payload);
       }
       refetch();
@@ -90,6 +90,13 @@ export default function Todos() {
     }
     handleCloseModal();
   };
+
+  const errors = useMemo(() => {
+    const erros = form.getFieldsError();
+    console.log(erros);
+
+    return erros;
+  }, [form.getFieldsError()]);
 
   if (isLoading) return <Spin />;
   else if (isError) return <span>error</span>;
@@ -115,12 +122,15 @@ export default function Todos() {
       <Modal
         okText={modal.todoId ? "Edit" : "Add"}
         open={modal.open}
-        onOk={onSubmit}
-        confirmLoading={addTodoLoading || updateTodoLoading}
+        footer={null}
         onClose={handleCloseModal}
-        onCancel={handleCloseModal}
       >
-        <TodoForm form={form} />
+        <TodoForm
+          form={form}
+          onFinish={onSubmit}
+          onClose={handleCloseModal}
+          loading={addTodoLoading || updateTodoLoading}
+        />
       </Modal>
     </div>
   );

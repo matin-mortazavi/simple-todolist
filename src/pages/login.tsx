@@ -1,11 +1,10 @@
 import {
-  Link,
   useNavigate,
   useRouteContext,
   useRouter,
   useSearch,
 } from "@tanstack/react-router";
-import { Button, Flex, Form, Input, Typography } from "antd";
+import { Form } from "antd";
 import { login } from "@/services/auth";
 import { User } from "@/types/user";
 import { useEffect } from "react";
@@ -35,9 +34,7 @@ export default function Login() {
   const onLogoutClick = () => context.logout();
 
   useEffect(() => {
-    if (context?.isAuthorized) {
-      navigate({ to: search.redirect });
-    }
+    if (context?.isAuthorized) navigate({ to: search.redirect });
   }, [context?.isAuthorized, search.redirect]);
 
   return (
