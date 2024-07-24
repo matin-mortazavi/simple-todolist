@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
-import { routeTree } from "../routeTree.gen";
-import { useAuthStore } from "../store/auth";
+import { routeTree } from "@/routeTree.gen";
+import { useAuthStore } from "@/store/auth";
 import { Spin } from "antd";
 
 const client = new QueryClient();

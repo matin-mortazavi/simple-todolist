@@ -1,5 +1,5 @@
 import React from "react";
-import { Todo } from "../types/todo";
+import { Todo } from "@/types/todo";
 import { Button, Popconfirm, Table, TableProps, Tag } from "antd";
 
 const colors: {

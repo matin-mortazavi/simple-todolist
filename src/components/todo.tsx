@@ -1,7 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { Todo as PropType } from "../types/todo";
-import { getTodo } from "../services/todo";
-import { Navigate, useNavigate } from "@tanstack/react-router";
+import { Todo as PropType } from "@/types/todo";
+import { useNavigate } from "@tanstack/react-router";
 
 const Todo = ({
   todo,
@@ -21,7 +19,7 @@ const Todo = ({
       </button>
 
       <button
-        onClick={() => navigate({ to: "/todos/$id", params: { id: todo.id } })}
+      // onClick={() => navigate({ to: "/todos/$id", params: { id: todo.id } })}
       >
         Show detail
       </button>

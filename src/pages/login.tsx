@@ -6,8 +6,8 @@ import {
   useSearch,
 } from "@tanstack/react-router";
 import { Button, Flex, Form, Input, Typography } from "antd";
-import { login } from "../services/auth";
-import { User } from "../types/user";
+import { login } from "@/services/auth";
+import { User } from "@/types/user";
 import { useEffect } from "react";
 
 export default function Login() {
