@@ -2,7 +2,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { routeTree } from "@/routeTree.gen";
 import { useAuthStore } from "@/store/auth";
-import { Spin } from "antd";
 import NotFound from "@/pages/not-found";
 
 const client = new QueryClient();
@@ -28,7 +27,7 @@ const Providers = () => {
 
   return (
     <QueryClientProvider client={client}>
-      <RouterProvider router={router} context={{ auth }} />
+      <RouterProvider router={router} context={{ auth, client }} />
     </QueryClientProvider>
   );
 };

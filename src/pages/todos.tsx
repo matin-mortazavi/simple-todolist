@@ -14,16 +14,18 @@ interface ModalState {
 const LIMIT = 4;
 
 export default function Todos() {
-  const [form] = Form.useForm();
-  const [modal, setModal] = useState<ModalState>({ open: false, todoId: "" });
-  const [page, setPage] = useState<number>(1);
+  const queryClient = useQueryClient();
 
+  const [form] = Form.useForm();
+
+  const [modal, setModal] = useState<ModalState>({ open: false, todoId: "" });
   const handleCloseModal = () => {
     setModal({ todoId: "", open: false });
     form.resetFields();
   };
 
-  const queryClient = useQueryClient();
+  const [page, setPage] = useState<number>(1);
+  const onPageChange = (page: number) => setPage(page);
 
   const todoListOptions = {
     queryKey: ["todos", page],
@@ -33,8 +35,10 @@ export default function Todos() {
   // Fetch todos on mount
   const { data: todos, isLoading, isError } = useQuery(todoListOptions);
 
+  //Optimistic updating UI
   const handleMutate = async (todo: Todo) => {
     queryClient.cancelQueries({ queryKey: todoListOptions.queryKey });
+
     const prevTodos = queryClient.getQueryData<FetchedTodos>(
       todoListOptions.queryKey
     );
@@ -53,6 +57,7 @@ export default function Todos() {
     }
   };
 
+  //get triggerd afer end of fetch and refetch todos
   const handleSettled = () => {
     queryClient.invalidateQueries({ queryKey: todoListOptions.queryKey });
   };
@@ -99,17 +104,16 @@ export default function Todos() {
     }
   };
 
-  // get triggered with "onOk" in Modal
-  const onSubmit = async () => {
+  // get triggered after the form get finished
+  const onFinish = async (payload: Todo) => {
     try {
-      const payload = form.getFieldsValue();
-
-      if (modal.todoId) {
+      if (modal.todoId)
         await updateTodoMutation({ ...payload, id: modal.todoId });
-      } else {
+      else {
+        //We have to add a id manual for our api
         const payloadWithId = {
-          id: (todos!.total + 1).toString(),
           ...payload,
+          id: (todos!.total + 1).toString(),
         };
         await addTodoMutation(payloadWithId);
       }
@@ -117,10 +121,6 @@ export default function Todos() {
       console.log(err);
     }
     handleCloseModal();
-  };
-
-  const onPageChange = (page: number) => {
-    setPage(page);
   };
 
   if (isError) return <span>error</span>;
@@ -154,7 +154,7 @@ export default function Todos() {
       >
         <TodoForm
           form={form}
-          onFinish={onSubmit}
+          onFinish={onFinish}
           onClose={handleCloseModal}
           loading={addTodoLoading || updateTodoLoading}
         />
