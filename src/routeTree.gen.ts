@@ -13,8 +13,10 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as ProtectedRouteImport } from './routes/_protected/route'
 import { Route as authLoginImport } from './routes/(auth)/login'
-import { Route as ProtectedTodosIndexImport } from './routes/_protected/todos/index'
-import { Route as ProtectedTodosIdImport } from './routes/_protected/todos/$id'
+import { Route as ProtectedTodosRouteImport } from './routes/_protected/todos/route'
+import { Route as ProtectedTodosAddImport } from './routes/_protected/todos/add'
+import { Route as ProtectedTodosIdViewImport } from './routes/_protected/todos/$id.view'
+import { Route as ProtectedTodosIdEditImport } from './routes/_protected/todos/$id.edit'
 
 // Create/Update Routes
 
@@ -28,14 +30,24 @@ const authLoginRoute = authLoginImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const ProtectedTodosIndexRoute = ProtectedTodosIndexImport.update({
-  path: '/todos/',
+const ProtectedTodosRouteRoute = ProtectedTodosRouteImport.update({
+  path: '/todos',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
 
-const ProtectedTodosIdRoute = ProtectedTodosIdImport.update({
-  path: '/todos/$id',
-  getParentRoute: () => ProtectedRouteRoute,
+const ProtectedTodosAddRoute = ProtectedTodosAddImport.update({
+  path: '/add',
+  getParentRoute: () => ProtectedTodosRouteRoute,
+} as any)
+
+const ProtectedTodosIdViewRoute = ProtectedTodosIdViewImport.update({
+  path: '/$id/view',
+  getParentRoute: () => ProtectedTodosRouteRoute,
+} as any)
+
+const ProtectedTodosIdEditRoute = ProtectedTodosIdEditImport.update({
+  path: '/$id/edit',
+  getParentRoute: () => ProtectedTodosRouteRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -49,6 +61,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedRouteImport
       parentRoute: typeof rootRoute
     }
+    '/_protected/todos': {
+      id: '/_protected/todos'
+      path: '/todos'
+      fullPath: '/todos'
+      preLoaderRoute: typeof ProtectedTodosRouteImport
+      parentRoute: typeof ProtectedRouteImport
+    }
     '/(auth)/login': {
       id: '/login'
       path: '/login'
@@ -56,19 +75,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authLoginImport
       parentRoute: typeof rootRoute
     }
-    '/_protected/todos/$id': {
-      id: '/_protected/todos/$id'
-      path: '/todos/$id'
-      fullPath: '/todos/$id'
-      preLoaderRoute: typeof ProtectedTodosIdImport
-      parentRoute: typeof ProtectedRouteImport
+    '/_protected/todos/add': {
+      id: '/_protected/todos/add'
+      path: '/add'
+      fullPath: '/todos/add'
+      preLoaderRoute: typeof ProtectedTodosAddImport
+      parentRoute: typeof ProtectedTodosRouteImport
     }
-    '/_protected/todos/': {
-      id: '/_protected/todos/'
-      path: '/todos'
-      fullPath: '/todos'
-      preLoaderRoute: typeof ProtectedTodosIndexImport
-      parentRoute: typeof ProtectedRouteImport
+    '/_protected/todos/$id/edit': {
+      id: '/_protected/todos/$id/edit'
+      path: '/$id/edit'
+      fullPath: '/todos/$id/edit'
+      preLoaderRoute: typeof ProtectedTodosIdEditImport
+      parentRoute: typeof ProtectedTodosRouteImport
+    }
+    '/_protected/todos/$id/view': {
+      id: '/_protected/todos/$id/view'
+      path: '/$id/view'
+      fullPath: '/todos/$id/view'
+      preLoaderRoute: typeof ProtectedTodosIdViewImport
+      parentRoute: typeof ProtectedTodosRouteImport
     }
   }
 }
@@ -77,8 +103,11 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren({
   ProtectedRouteRoute: ProtectedRouteRoute.addChildren({
-    ProtectedTodosIdRoute,
-    ProtectedTodosIndexRoute,
+    ProtectedTodosRouteRoute: ProtectedTodosRouteRoute.addChildren({
+      ProtectedTodosAddRoute,
+      ProtectedTodosIdEditRoute,
+      ProtectedTodosIdViewRoute,
+    }),
   }),
   authLoginRoute,
 })
@@ -98,20 +127,32 @@ export const routeTree = rootRoute.addChildren({
     "/_protected": {
       "filePath": "_protected/route.tsx",
       "children": [
-        "/_protected/todos/$id",
-        "/_protected/todos/"
+        "/_protected/todos"
+      ]
+    },
+    "/_protected/todos": {
+      "filePath": "_protected/todos/route.tsx",
+      "parent": "/_protected",
+      "children": [
+        "/_protected/todos/add",
+        "/_protected/todos/$id/edit",
+        "/_protected/todos/$id/view"
       ]
     },
     "/login": {
       "filePath": "(auth)/login.tsx"
     },
-    "/_protected/todos/$id": {
-      "filePath": "_protected/todos/$id.tsx",
-      "parent": "/_protected"
+    "/_protected/todos/add": {
+      "filePath": "_protected/todos/add.tsx",
+      "parent": "/_protected/todos"
     },
-    "/_protected/todos/": {
-      "filePath": "_protected/todos/index.tsx",
-      "parent": "/_protected"
+    "/_protected/todos/$id/edit": {
+      "filePath": "_protected/todos/$id.edit.tsx",
+      "parent": "/_protected/todos"
+    },
+    "/_protected/todos/$id/view": {
+      "filePath": "_protected/todos/$id.view.tsx",
+      "parent": "/_protected/todos"
     }
   }
 }

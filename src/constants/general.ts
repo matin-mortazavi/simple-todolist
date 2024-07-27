@@ -3,4 +3,5 @@ export const generalConstant = {
     required: true,
     message: "This field is required",
   },
+  DEFAULT_ERROR_MESSEGE: "Opsss, something went wrong",
 };

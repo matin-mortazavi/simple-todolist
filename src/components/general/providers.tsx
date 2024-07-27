@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { routeTree } from "@/routeTree.gen";
 import { useAuthStore } from "@/store/auth";
-import NotFound from "@/pages/not-found";
+import NotFound from "@/pages/general/not-found";
 
 const client = new QueryClient();
 

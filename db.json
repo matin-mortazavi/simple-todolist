@@ -1,76 +1,48 @@
 {
   "todos": [
     {
-      "id": "1",
-      "priority": "medium",
-      "isCompleted": true,
-      "title": "Learn Advanced TS - edit"
-    },
-    {
-      "id": "2",
-      "priority": "medium",
-      "isCompleted": true,
-      "title": "Review German B2 Book2"
-    },
-    {
-      "id": "3",
-      "priority": "high",
-      "isCompleted": false,
-      "title": "Start B2 In English"
-    },
-    {
-      "id": "4",
-      "priority": "high",
-      "isCompleted": true,
-      "title": "Learn React-Query"
-    },
-    {
-      "id": "5",
-      "priority": "medium",
-      "isCompleted": true,
-      "title": "hiii"
-    },
-    {
-      "id": "6",
-      "priority": "high",
-      "isCompleted": true,
-      "title": "hi"
-    },
-    {
-      "id": "7",
       "priority": "low",
       "isCompleted": true,
-      "title": "Learn Advanced TS - edited2"
-    },
-    {
-      "priority": "medium",
-      "isCompleted": true,
-      "title": "dadsad",
-      "id": "8"
-    },
-    {
-      "priority": "medium",
-      "isCompleted": true,
-      "title": "dasdsad",
-      "id": "9"
+      "title": "New todo ",
+      "id": "0"
     },
     {
       "priority": "high",
       "isCompleted": true,
-      "title": "fsdfdsf",
-      "id": "10"
+      "title": "jhi",
+      "id": "1"
+    },
+    {
+      "priority": "high",
+      "isCompleted": true,
+      "title": "error ",
+      "id": "j02lI9p"
     },
     {
       "priority": "medium",
-      "isCompleted": true,
+      "title": "dasdad",
+      "id": "3"
+    },
+    {
+      "priority": "low",
+      "title": "dasdad",
+      "id": "4"
+    },
+    {
+      "priority": "low",
       "title": "dasdada",
-      "id": "11"
+      "id": "5"
     },
     {
-      "priority": "medium",
+      "priority": "low",
+      "title": "dasdsad",
+      "id": "7"
+    },
+    {
+      "priority": "low",
       "isCompleted": true,
-      "title": "dasdadad",
-      "id": "12"
+      "title": "dsada",
+      "id": "8"
     }
   ],
   "users": [

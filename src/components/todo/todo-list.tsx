@@ -1,6 +1,7 @@
 import React from "react";
 import { OptimisticTodo, Todo } from "@/types/todo";
 import { Button, Popconfirm, Spin, Table, TableProps, Tag } from "antd";
+import DeleteTodo from "./delete/delete-todo";
 
 const colors: {
   [key: string]: string;
@@ -18,6 +19,8 @@ interface TodoListProps {
   loading: boolean;
   onUpdate: (id: string) => void;
   onDelete: (id: string) => void;
+  onView: (id: string) => void;
+
   onPageChange: (page: number) => void;
 }
 
@@ -28,9 +31,10 @@ const TodoList: React.FC<TodoListProps> = ({
   limit = 6,
   loading,
   onUpdate,
-  onDelete,
+  onView,
   onPageChange,
 }) => {
+  
   const columns: TableProps<Todo | OptimisticTodo>["columns"] = [
     {
       title: "Title",
@@ -72,24 +76,25 @@ const TodoList: React.FC<TodoListProps> = ({
       key: "action",
       render: (_, record) => (
         <div className=" flex gap-[16px] [&>*]:cursor-pointer">
-          <Popconfirm
-            title="Delete the task"
-            description="Are you sure to delete this task?"
-            okText="Confirm"
-            cancelText="No"
-            onConfirm={() => onDelete(record.id)}
-          >
+          <DeleteTodo id={record.id}>
             <Button disabled={(record as OptimisticTodo).isPending} danger>
               Delete
             </Button>
-          </Popconfirm>
+          </DeleteTodo>
 
           <Button
-            className=""
             disabled={(record as OptimisticTodo).isPending}
             onClick={() => onUpdate(record.id)}
           >
             Edit
+          </Button>
+
+          <Button
+            type="primary"
+            disabled={(record as OptimisticTodo).isPending}
+            onClick={() => onView(record.id)}
+          >
+            View
           </Button>
         </div>
       ),
