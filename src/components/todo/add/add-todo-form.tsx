@@ -1,5 +1,5 @@
 import { generalConstant, todoConstant } from "@/constants";
-import { todoListOptions } from "@/services/query-options";
+import { todoListOptions, todoQueryOptions } from "@/services/query-options";
 import { createTodo } from "@/services/todo";
 import { useTodoStore } from "@/store/todo";
 import { FetchedTodos, OptimisticTodo, Todo } from "@/types/todo";
@@ -18,6 +18,7 @@ import {
 } from "antd";
 import { useForm } from "antd/es/form/Form";
 import FormItem from "antd/es/form/FormItem";
+import { produce } from "immer";
 import React from "react";
 
 interface AddTodoFormProps {
@@ -41,14 +42,16 @@ const AddTodoForm: React.FC<AddTodoFormProps> = ({ onClose }) => {
 
     if (prevTodos) {
       const newTodo = { ...todo, isPending: true } as OptimisticTodo;
-      const updatedItems = [...prevTodos.items, newTodo];
 
-      const updatedTotal = prevTodos.total++;
-
-      queryClient.setQueryData(todoListOptions(page, limit).queryKey, {
-        total: updatedTotal,
-        items: updatedItems,
+      const updatedData = produce(prevTodos, (draft) => {
+        draft.items.push(newTodo);
+        draft.total++;
       });
+
+      queryClient.setQueryData(
+        todoListOptions(page, limit).queryKey,
+        updatedData
+      );
     }
   };
 
@@ -66,11 +69,16 @@ const AddTodoForm: React.FC<AddTodoFormProps> = ({ onClose }) => {
   const onFinish = async (payload: Todo) => {
     try {
       //We have to add a id manual for our api
-      const payloadWithId = {
-        ...payload,
-        id: totalTodos.toString(),
-      };
-      await addTodoMutation.mutateAsync(payloadWithId);
+      const payloadWithId = produce(payload, (draft) => {
+        draft.id = totalTodos.toString();
+      });
+
+      const addedTodo = await addTodoMutation.mutateAsync(payloadWithId);
+      
+      queryClient.setQueryData(
+        todoQueryOptions(addedTodo.id).queryKey,
+        addedTodo
+      );
 
       notification.success({ message: "Todo was added successfully" });
       form.resetFields();

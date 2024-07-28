@@ -1,5 +1,5 @@
 import { generalConstant, todoConstant } from "@/constants";
-import { todoListOptions } from "@/services/query-options";
+import { todoListOptions, todoQueryOptions } from "@/services/query-options";
 import { updateTodo } from "@/services/todo";
 import { FetchedTodos, OptimisticTodo, Todo } from "@/types/todo";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -17,6 +17,7 @@ import {
 } from "antd";
 import { useForm } from "antd/es/form/Form";
 import FormItem from "antd/es/form/FormItem";
+import { produce } from "immer";
 import React, { useEffect } from "react";
 
 interface EditTodoFormProps {
@@ -40,19 +41,22 @@ const EditTodoForm: React.FC<EditTodoFormProps> = ({ onClose, todo }) => {
 
     if (prevTodos) {
       const existedTodo = prevTodos.items.find((item) => item.id === todo.id);
-      const prevItems = [...prevTodos.items];
-      const existedTodoIndex = prevTodos.items.findIndex(
-        (todo) => todo.id === existedTodo?.id
-      );
-      prevItems.splice(existedTodoIndex, 1, {
+      const updatedTodo = {
         ...todo,
         isPending: true,
-      } as OptimisticTodo);
+      } as OptimisticTodo;
 
-      queryClient.setQueryData(todoListOptions(page, limit).queryKey, {
-        ...prevTodos,
-        items: prevItems,
+      const updatedTodoIndex = prevTodos.items.findIndex(
+        (todo) => todo.id === existedTodo?.id
+      );
+      const updatedData = produce(prevTodos, (draft) => {
+        draft.items.splice(updatedTodoIndex, 1, updatedTodo);
       });
+
+      queryClient.setQueryData(
+        todoListOptions(page, limit).queryKey,
+        updatedData
+      );
     }
   };
 
@@ -69,11 +73,13 @@ const EditTodoForm: React.FC<EditTodoFormProps> = ({ onClose, todo }) => {
 
   const onFinish = async (payload: Todo) => {
     try {
-      const payloadWithId = {
-        ...payload,
-        id: todo.id,
-      };
-      await editTodoMutation.mutateAsync(payloadWithId);
+      const payloadWithId = produce(payload, (draft) => {
+        draft.id = todo.id;
+      });
+
+      const updatedTodo = await editTodoMutation.mutateAsync(payloadWithId);
+
+      queryClient.setQueryData(todoQueryOptions(todo.id).queryKey, updatedTodo);
       notification.success({ message: "Todo updated was successfully" });
 
       form.resetFields();

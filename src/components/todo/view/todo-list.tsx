@@ -1,7 +1,7 @@
 import React from "react";
 import { OptimisticTodo, Todo } from "@/types/todo";
 import { Button, Popconfirm, Spin, Table, TableProps, Tag } from "antd";
-import DeleteTodo from "./delete/delete-todo";
+import DeleteTodo from "../delete/delete-todo";
 
 const colors: {
   [key: string]: string;
@@ -18,7 +18,6 @@ interface TodoListProps {
   limit: number;
   loading: boolean;
   onUpdate: (id: string) => void;
-  onDelete: (id: string) => void;
   onView: (id: string) => void;
 
   onPageChange: (page: number) => void;
@@ -34,7 +33,6 @@ const TodoList: React.FC<TodoListProps> = ({
   onView,
   onPageChange,
 }) => {
-  
   const columns: TableProps<Todo | OptimisticTodo>["columns"] = [
     {
       title: "Title",

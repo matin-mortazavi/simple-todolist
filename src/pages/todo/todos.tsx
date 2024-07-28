@@ -5,17 +5,12 @@ import {
 } from "@tanstack/react-query";
 import { createTodo, deleteTodo, updateTodo } from "@/services/todo";
 import { Button, Form, Modal } from "antd";
-import { useState } from "react";
-import TodoList from "@/components/todo/todo-list";
+import TodoList from "@/components/todo/view/todo-list";
 import { FetchedTodos, OptimisticTodo, Todo } from "@/types/todo";
 import { todoListOptions } from "@/services/query-options";
 import { todoConstant } from "@/constants";
 import { Outlet, useNavigate, useSearch } from "@tanstack/react-router";
 import { useTodoStore } from "@/store/todo";
-interface ModalState {
-  open: boolean;
-  todoId?: string;
-}
 
 export default function Todos() {
   const queryClient = useQueryClient();
@@ -33,19 +28,11 @@ export default function Todos() {
   const setTotalTodos = useTodoStore((state) => state.setTotalTodos);
   setTotalTodos(todos.total);
 
-  //Optimistic updating UI
-
   //get triggerd afer end of fetch and refetch todos
   const handleSettled = () =>
     queryClient.invalidateQueries({
       queryKey: todoListOptions(page, todoConstant.INITIAL_LIMIT).queryKey,
     });
-
-  // Delete todo mutation
-  const { mutateAsync: deleteTodoMutation } = useMutation({
-    mutationFn: deleteTodo,
-    onSettled: handleSettled,
-  });
 
   // get triggered with clicking on "Edit Button" in todo-list
   const handleUpdate = async (id: string): Promise<void> => {
@@ -67,13 +54,6 @@ export default function Todos() {
   };
 
   // get triggered with clicking on "Delete Button" in todo-list
-  const handleDelete = async (id: string): Promise<void> => {
-    try {
-      await deleteTodoMutation(id);
-    } catch (err) {
-      console.log(err);
-    }
-  };
 
   if (isError) return <span>error</span>;
 
@@ -105,7 +85,6 @@ export default function Todos() {
         todos={todos?.items}
         onUpdate={handleUpdate}
         onView={handleView}
-        onDelete={handleDelete}
         onPageChange={onPageChange}
       />
 
