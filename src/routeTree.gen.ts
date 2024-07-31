@@ -12,6 +12,7 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as ProtectedRouteImport } from './routes/_protected/route'
+import { Route as IndexImport } from './routes/index'
 import { Route as authLoginImport } from './routes/(auth)/login'
 import { Route as ProtectedTodosRouteImport } from './routes/_protected/todos/route'
 import { Route as ProtectedTodosAddImport } from './routes/_protected/todos/add'
@@ -22,6 +23,11 @@ import { Route as ProtectedTodosIdEditImport } from './routes/_protected/todos/$
 
 const ProtectedRouteRoute = ProtectedRouteImport.update({
   id: '/_protected',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const IndexRoute = IndexImport.update({
+  path: '/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -54,6 +60,13 @@ const ProtectedTodosIdEditRoute = ProtectedTodosIdEditImport.update({
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
     '/_protected': {
       id: '/_protected'
       path: ''
@@ -102,6 +115,7 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 export const routeTree = rootRoute.addChildren({
+  IndexRoute,
   ProtectedRouteRoute: ProtectedRouteRoute.addChildren({
     ProtectedTodosRouteRoute: ProtectedTodosRouteRoute.addChildren({
       ProtectedTodosAddRoute,
@@ -120,9 +134,13 @@ export const routeTree = rootRoute.addChildren({
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
+        "/",
         "/_protected",
         "/login"
       ]
+    },
+    "/": {
+      "filePath": "index.tsx"
     },
     "/_protected": {
       "filePath": "_protected/route.tsx",
