@@ -1,6 +1,6 @@
 import React from "react";
 import { OptimisticTodo, Todo } from "@/types/todo";
-import { Button, Popconfirm, Spin, Table, TableProps, Tag } from "antd";
+import { Button, Spin, Table, TableProps, Tag } from "antd";
 import DeleteTodo from "../delete/delete-todo";
 
 const colors: {

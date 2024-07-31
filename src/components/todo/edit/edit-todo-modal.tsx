@@ -1,6 +1,6 @@
 import { Alert, Modal, Spin } from "antd";
 import EditTodoForm from "./edit-todo-from";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { todoQueryOptions } from "@/services/query-options";
 import React from "react";
 import { generalConstant } from "@/constants";
