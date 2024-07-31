@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import Todos from "@/pages/todo/todos";
 import { todosQueryOptions } from "@/services/query-options";
 import { todoConstant } from "@/constants";
+import { Spin } from "antd";
 
 interface todosSearch {
   page: number;
@@ -12,6 +13,7 @@ export const Route = createFileRoute("/_protected/todos")({
   loader: ({ context: { client } }) => {
     client.ensureQueryData(todosQueryOptions(1, todoConstant.INITIAL_LIMIT));
   },
+  pendingComponent: Spin,
   component: Todos,
   validateSearch: (search: Record<string, unknown>): todosSearch => {
     return {
