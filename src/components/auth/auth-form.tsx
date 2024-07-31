@@ -5,9 +5,11 @@ import { Button, Form, FormInstance, Input } from "antd";
 const AuthForm = ({
   form,
   onFinish,
+  loading,
 }: {
   form: FormInstance;
   onFinish: (payload: User) => void;
+  loading: boolean;
 }) => {
   return (
     <Form onFinish={onFinish} form={form}>
@@ -25,7 +27,9 @@ const AuthForm = ({
       >
         <Input />
       </Form.Item>
-      <Button htmlType="submit">Login</Button>
+      <Button loading={loading} htmlType="submit">
+        Login
+      </Button>
     </Form>
   );
 };

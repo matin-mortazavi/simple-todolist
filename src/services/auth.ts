@@ -14,7 +14,7 @@ export const login = async (payload: User): Promise<User> => {
       //We use json-server as data provider and it work with "id" property
       //so we fetch with id but we transform it to "username" in returb
       return { username: user.id, token: authConstant.TOKEN };
-    else throw new Error("Password in wrong");
+    throw new Error("Password in wrong");
   } catch (err) {
     throw new Error("Username or Password is wrong");
   }

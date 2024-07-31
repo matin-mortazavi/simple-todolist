@@ -1,15 +1,12 @@
-import {
-  useNavigate,
-  useRouteContext,
-  useRouter,
-  useSearch,
-} from "@tanstack/react-router";
-import { Form } from "antd";
+import { useNavigate, useRouter, useSearch } from "@tanstack/react-router";
+import { Form, notification } from "antd";
 import { login } from "@/services/auth";
 import { User } from "@/types/user";
 import { useEffect } from "react";
 import AuthForm from "@/components/auth/auth-form";
 import AlreadyLoggedin from "@/components/auth/already-loggedin";
+import { useMutation } from "@tanstack/react-query";
+import { useAuthStore } from "@/store/auth";
 
 export default function Login() {
   const search: { redirect?: string } = useSearch({ from: "/login" });
@@ -18,33 +15,46 @@ export default function Login() {
 
   const [form] = Form.useForm();
 
-  const context = useRouteContext({
-    from: "/login",
-    select: (context) => context?.auth,
+  const [isAuthorized, user, logout, contextLogin] = useAuthStore((state) => [
+    state.isAuthorized,
+    state.user,
+    state.logout,
+    state.login,
+  ]);
+  const authMutation = useMutation({
+    mutationFn: login,
   });
 
   const onFinish = async (payload: User) => {
-    const user = await login(payload);
-    if (user) {
-      await context.login(user);
+    try {
+      const user = await authMutation.mutateAsync(payload);
+      await contextLogin(user);
       router.invalidate();
+    } catch (err) {
+      notification.error({ message: "Username or password isn't correct" });
+    } finally {
+      form.resetFields();
     }
   };
 
-  const onLogoutClick = () => context.logout();
+  const onLogoutClick = () => logout();
 
   useEffect(() => {
-    if (context?.isAuthorized) navigate({ to: search.redirect });
-  }, [context?.isAuthorized, search.redirect]);
+    if (isAuthorized) navigate({ to: search.redirect });
+  }, [isAuthorized, search.redirect]);
 
   return (
-    <div className=" w-[500px] bg-slate-300 p-[32px] rounded-xl mx-auto">
-      {!context?.isAuthorized ? (
-        <AuthForm form={form} onFinish={onFinish} />
+    <div className=" w-[500px] bg-blue-200 p-[32px] rounded-xl mx-auto ">
+      {!isAuthorized ? (
+        <AuthForm
+          form={form}
+          onFinish={onFinish}
+          loading={authMutation.isPending}
+        />
       ) : (
         <AlreadyLoggedin
           onLogoutClick={onLogoutClick}
-          username={context.user.username!}
+          username={user.username!}
         />
       )}
     </div>
