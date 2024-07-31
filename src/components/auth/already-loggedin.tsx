@@ -1,3 +1,4 @@
+import { todoConstant } from "@/constants";
 import { Link } from "@tanstack/react-router";
 import { Button, Flex, Typography } from "antd";
 
@@ -15,7 +16,14 @@ const AlreadyLoggedin = ({
         <span className="ml-[8px] text-lg">{username}</span>
       </Typography.Paragraph>
       <Typography.Paragraph>
-        Navigate to dashboard <Link to="/todos"> Navigate </Link>
+        Navigate to dashboard{" "}
+        <Link
+          search={{ page: 1, limit: todoConstant.INITIAL_LIMIT }}
+          to="/todos"
+        >
+          {" "}
+          Navigate{" "}
+        </Link>
       </Typography.Paragraph>
       <Button type="primary" onClick={onLogoutClick}>
         Log out

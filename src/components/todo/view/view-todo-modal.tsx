@@ -1,5 +1,5 @@
-import { Alert, Card, Modal, Spin, Typography } from "antd";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { Alert, Modal, Spin, Typography } from "antd";
+import { useQuery } from "@tanstack/react-query";
 import { todoQueryOptions } from "@/services/query-options";
 import { generalConstant } from "@/constants";
 import React from "react";
