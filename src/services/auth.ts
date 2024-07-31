@@ -1,7 +1,7 @@
 import { User } from "@/types/user";
 import { authConstant } from "@/constants/auth";
 
-const BASE_URL = "http://localhost:3000";
+const BASE_URL = "https://todo-server-two-nu.vercel.app";
 
 export const login = async (payload: User): Promise<User> => {
   try {

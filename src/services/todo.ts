@@ -1,6 +1,6 @@
 import { FetchedTodos, Todo } from "@/types/todo";
 
-const BASE_URL = "http://localhost:3000";
+const BASE_URL = "https://todo-server-two-nu.vercel.app";
 
 export const getTodos = async (
   page: number = 1,

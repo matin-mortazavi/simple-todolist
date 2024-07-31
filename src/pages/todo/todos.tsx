@@ -7,7 +7,7 @@ import { createTodo, deleteTodo, updateTodo } from "@/services/todo";
 import { Button, Form, Modal } from "antd";
 import TodoList from "@/components/todo/view/todo-list";
 import { FetchedTodos, OptimisticTodo, Todo } from "@/types/todo";
-import { todoListOptions } from "@/services/query-options";
+import { todosQueryOptions } from "@/services/query-options";
 import { todoConstant } from "@/constants";
 import { Outlet, useNavigate, useSearch } from "@tanstack/react-router";
 import { useTodoStore } from "@/store/todo";
@@ -23,7 +23,7 @@ export default function Todos() {
     data: todos,
     isLoading,
     isError,
-  } = useSuspenseQuery(todoListOptions(page, todoConstant.INITIAL_LIMIT));
+  } = useSuspenseQuery(todosQueryOptions(page, todoConstant.INITIAL_LIMIT));
 
   const setTotalTodos = useTodoStore((state) => state.setTotalTodos);
   setTotalTodos(todos.total);
@@ -31,7 +31,7 @@ export default function Todos() {
   //get triggerd afer end of fetch and refetch todos
   const handleSettled = () =>
     queryClient.invalidateQueries({
-      queryKey: todoListOptions(page, todoConstant.INITIAL_LIMIT).queryKey,
+      queryKey: todosQueryOptions(page, todoConstant.INITIAL_LIMIT).queryKey,
     });
 
   // get triggered with clicking on "Edit Button" in todo-list

@@ -1,7 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
 import { getTodo, getTodos } from "./todo";
 
-export const todoListOptions = (page: number, limit: number) =>
+export const todosQueryOptions = (page: number, limit: number) =>
   queryOptions({
     queryKey: ["todos", page],
     queryFn: () => getTodos(page, limit),

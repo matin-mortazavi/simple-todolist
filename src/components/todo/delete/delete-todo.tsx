@@ -1,5 +1,5 @@
 import { generalConstant } from "@/constants";
-import { todoListOptions } from "@/services/query-options";
+import { todosQueryOptions } from "@/services/query-options";
 import { deleteTodo } from "@/services/todo";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSearch } from "@tanstack/react-router";
@@ -16,7 +16,7 @@ const DeleteTodo: React.FC<DeleteTodoProps> = ({ id, children }) => {
   const queryClient = useQueryClient();
   const handleSettled = () =>
     queryClient.invalidateQueries({
-      queryKey: todoListOptions(page, limit).queryKey,
+      queryKey: todosQueryOptions(page, limit).queryKey,
     });
 
   // Delete todo mutation

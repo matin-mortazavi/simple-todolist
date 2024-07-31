@@ -1,5 +1,5 @@
 import { generalConstant, todoConstant } from "@/constants";
-import { todoListOptions, todoQueryOptions } from "@/services/query-options";
+import { todosQueryOptions, todoQueryOptions } from "@/services/query-options";
 import { updateTodo } from "@/services/todo";
 import { FetchedTodos, OptimisticTodo, Todo } from "@/types/todo";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -32,11 +32,11 @@ const EditTodoForm: React.FC<EditTodoFormProps> = ({ onClose, todo }) => {
 
   const handleMutate = async (todo: Todo) => {
     queryClient.cancelQueries({
-      queryKey: todoListOptions(page, todoConstant.INITIAL_LIMIT).queryKey,
+      queryKey: todosQueryOptions(page, todoConstant.INITIAL_LIMIT).queryKey,
     });
 
     const prevTodos = queryClient.getQueryData<FetchedTodos>(
-      todoListOptions(page, todoConstant.INITIAL_LIMIT).queryKey
+      todosQueryOptions(page, todoConstant.INITIAL_LIMIT).queryKey
     );
 
     if (prevTodos) {
@@ -54,7 +54,7 @@ const EditTodoForm: React.FC<EditTodoFormProps> = ({ onClose, todo }) => {
       });
 
       queryClient.setQueryData(
-        todoListOptions(page, limit).queryKey,
+        todosQueryOptions(page, limit).queryKey,
         updatedData
       );
     }
@@ -62,7 +62,7 @@ const EditTodoForm: React.FC<EditTodoFormProps> = ({ onClose, todo }) => {
 
   const handleSettled = () =>
     queryClient.invalidateQueries({
-      queryKey: todoListOptions(page, limit).queryKey,
+      queryKey: todosQueryOptions(page, limit).queryKey,
     });
 
   const editTodoMutation = useMutation({
